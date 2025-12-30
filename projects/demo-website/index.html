@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="A luxury-grade event planner for weddings and corporate events: calendar, tasks, guests, vendors, and budget — local-first." />
+  <meta name="theme-color" content="#0B0A10" />
+  <title>Event Planner • Luxury</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">EP</div>
+      <div>
+        <div class="brand-title">Event Planner</div>
+        <div class="brand-sub">Luxury wedding & corporate planning • Tasks • Guests • Vendors • Budget</div>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="nav-btn is-active" data-route="dashboard" type="button">Dashboard</button>
+      <button class="nav-btn" data-route="calendar" type="button">Calendar</button>
+      <button class="nav-btn" data-route="create" type="button">Create</button>
+      <button class="nav-btn" data-route="settings" type="button">Settings</button>
+    </nav>
+
+    <div class="topbar-actions">
+      <button id="darkModeBtn" class="btn btn-ghost" type="button" aria-pressed="false" title="Toggle theme">
+        ◐
+      </button>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view">
+      <div class="view-head">
+        <h1>Dashboard</h1>
+        <div class="view-head-actions">
+          <button class="btn" id="quickAddBtn" type="button">+ New Event</button>
+        </div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <div class="card-head">
+            <h2>Upcoming Events</h2>
+            <div class="muted" id="upcomingCount"></div>
+          </div>
+
+          <div class="controls">
+            <label class="field">
+              <span>Search</span>
+              <input id="searchInput" type="search" placeholder="Search title, location, notes…" />
+            </label>
+
+            <label class="field">
+              <span>Category</span>
+              <select id="categoryFilter">
+                <option value="all">All</option>
+                <option value="Birthday">Birthday</option>
+                <option value="Wedding">Wedding</option>
+                <option value="Conference">Conference</option>
+                <option value="Meetup">Meetup</option>
+                <option value="Party">Party</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Status</span>
+              <select id="statusFilter">
+                <option value="all">All</option>
+                <option value="Planned">Planned</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="eventsList" class="list" aria-live="polite"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>At a Glance</h2>
+            <div class="muted">Live stats</div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-num" id="statTotal">0</div>
+              <div class="stat-label">Total events</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num" id="statUpcoming">0</div>
+              <div class="stat-label">Upcoming (30 days)</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num" id="statTasks">0%</div>
+              <div class="stat-label">Avg tasks done</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="mini">
+            <h3 class="mini-title">Next up</h3>
+            <div id="nextUp" class="mini-body muted">No events yet — create one!</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section id="view-calendar" class="view hidden">
+      <div class="view-head">
+        <h1>Calendar</h1>
+        <div class="view-head-actions">
+          <button class="btn btn-ghost" id="prevMonthBtn" type="button">←</button>
+          <div class="pill" id="monthLabel">Month YYYY</div>
+          <button class="btn btn-ghost" id="nextMonthBtn" type="button">→</button>
+          <button class="btn" id="todayBtn" type="button">Today</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="calendar">
+          <div class="calendar-dow">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+          </div>
+          <div id="calendarGrid" class="calendar-grid" aria-label="Calendar grid"></div>
+        </div>
+        <p class="muted tip">Tip: Click a day to create an event on that date.</p>
+      </div>
+    </section>
+
+    <!-- CREATE / EDIT -->
+    <section id="view-create" class="view hidden">
+      <div class="view-head">
+        <h1 id="formTitle">Create Event</h1>
+        <div class="view-head-actions">
+          <button class="btn btn-ghost" id="cancelEditBtn" type="button">Cancel</button>
+          <button class="btn" id="saveEventBtn" type="button">Save</button>
+        </div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <div class="card-head">
+            <h2>Event Details</h2>
+            <div class="muted" id="editingHint">Fill out the details</div>
+          </div>
+
+          <form id="eventForm" class="form" autocomplete="off">
+            <input type="hidden" id="eventId" />
+
+            <label class="field">
+              <span>Title *</span>
+              <input id="titleInput" required placeholder="e.g., Black-tie Winter Gala" />
+            </label>
+
+            <div class="row">
+              <label class="field">
+                <span>Date *</span>
+                <input id="dateInput" type="date" required />
+              </label>
+              <label class="field">
+                <span>Time</span>
+                <input id="timeInput" type="time" />
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Location</span>
+              <input id="locationInput" placeholder="Venue / address / video link" />
+            </label>
+
+            <div class="row">
+              <label class="field">
+                <span>Category</span>
+                <select id="categoryInput">
+                  <option>Birthday</option>
+                  <option selected>Wedding</option>
+                  <option>Conference</option>
+                  <option>Meetup</option>
+                  <option>Party</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Status</span>
+                <select id="statusInput">
+                  <option>Planned</option>
+                  <option>In Progress</option>
+                  <option>Completed</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Notes</span>
+              <textarea id="notesInput" rows="4" placeholder="Run of show, vendor notes, seating details, dress code…"></textarea>
+            </label>
+
+            <label class="field">
+              <span>Expected Budget ($)</span>
+              <input id="budgetInput" type="number" min="0" step="0.01" placeholder="0.00" />
+            </label>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="tabs" role="tablist" aria-label="Event sub-sections">
+            <button class="tab is-active" data-tab="tasks" type="button" role="tab" aria-selected="true">Tasks</button>
+            <button class="tab" data-tab="guests" type="button" role="tab" aria-selected="false">Guests</button>
+            <button class="tab" data-tab="vendors" type="button" role="tab" aria-selected="false">Vendors</button>
+            <button class="tab" data-tab="budget" type="button" role="tab" aria-selected="false">Budget</button>
+          </div>
+
+          <!-- TASKS -->
+          <div class="tab-panel" data-panel="tasks">
+            <div class="subhead">
+              <h2>Tasks</h2>
+              <div class="muted" id="taskProgress">0/0 done</div>
+            </div>
+
+            <div class="inline">
+              <input id="taskText" placeholder="Add a task (e.g., Confirm florist)" />
+              <button class="btn" id="addTaskBtn" type="button">Add</button>
+            </div>
+            <div id="tasksList" class="list"></div>
+          </div>
+
+          <!-- GUESTS -->
+          <div class="tab-panel hidden" data-panel="guests">
+            <div class="subhead">
+              <h2>Guests</h2>
+              <div class="muted" id="guestCount">0 guests</div>
+            </div>
+
+            <div class="inline">
+              <input id="guestName" placeholder="Guest name (e.g., Sam)" />
+              <select id="guestRsvp" aria-label="RSVP status">
+                <option>Invited</option>
+                <option>Going</option>
+                <option>Maybe</option>
+                <option>Declined</option>
+              </select>
+              <button class="btn" id="addGuestBtn" type="button">Add</button>
+            </div>
+
+            <div id="guestsList" class="list"></div>
+          </div>
+
+          <!-- VENDORS -->
+          <div class="tab-panel hidden" data-panel="vendors">
+            <div class="subhead">
+              <h2>Vendors</h2>
+              <div class="muted" id="vendorCount">0 vendors</div>
+            </div>
+
+            <div class="grid two tight">
+              <label class="field">
+                <span>Vendor</span>
+                <input id="vendorName" placeholder="e.g., Atelier Catering" />
+              </label>
+              <label class="field">
+                <span>Service</span>
+                <input id="vendorService" placeholder="e.g., Catering" />
+              </label>
+            </div>
+
+            <div class="grid two tight">
+              <label class="field">
+                <span>Contact</span>
+                <input id="vendorContact" placeholder="Email / phone" />
+              </label>
+              <label class="field">
+                <span>Estimated Cost ($)</span>
+                <input id="vendorCost" type="number" min="0" step="0.01" placeholder="0.00" />
+              </label>
+            </div>
+
+            <button class="btn" id="addVendorBtn" type="button">Add Vendor</button>
+            <div id="vendorsList" class="list"></div>
+          </div>
+
+          <!-- BUDGET -->
+          <div class="tab-panel hidden" data-panel="budget">
+            <div class="subhead">
+              <h2>Budget Items</h2>
+              <div class="muted" id="budgetSummary">Spent $0.00</div>
+            </div>
+
+            <div class="grid two tight">
+              <label class="field">
+                <span>Item</span>
+                <input id="budgetItemName" placeholder="e.g., Stationery" />
+              </label>
+              <label class="field">
+                <span>Amount ($)</span>
+                <input id="budgetItemAmount" type="number" min="0" step="0.01" placeholder="0.00" />
+              </label>
+            </div>
+            <button class="btn" id="addBudgetItemBtn" type="button">Add Item</button>
+
+            <div class="budget-totals">
+              <div class="pill">Expected: <strong id="expectedBudget">$0.00</strong></div>
+              <div class="pill">Spent: <strong id="spentBudget">$0.00</strong></div>
+              <div class="pill">Remaining: <strong id="remainingBudget">$0.00</strong></div>
+            </div>
+
+            <div id="budgetList" class="list"></div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="danger-zone">
+            <button class="btn btn-danger" id="deleteEventBtn" type="button">Delete Event</button>
+            <div class="muted">Deleting removes this event and all its details.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="view-settings" class="view hidden">
+      <div class="view-head">
+        <h1>Settings</h1>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <div class="card-head">
+            <h2>Data</h2>
+            <div class="muted">Export / Import your events</div>
+          </div>
+
+          <div class="stack">
+            <button class="btn" id="exportBtn" type="button">Export JSON</button>
+
+            <label class="field">
+              <span>Import JSON</span>
+              <input id="importFile" type="file" accept="application/json" />
+            </label>
+
+            <button class="btn btn-danger" id="clearAllBtn" type="button">Clear All Data</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>About</h2>
+            <div class="muted">Static, local-first</div>
+          </div>
+          <p class="muted">
+            Everything is stored in <strong>your browser</strong> using LocalStorage.
+            For multi-device sync, add a backend later (e.g., Supabase/Firebase).
+          </p>
+          <ul class="muted">
+            <li>Responsive and keyboard friendly</li>
+            <li>No dependencies</li>
+            <li>Deployable as a static container</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- EVENT DETAIL MODAL -->
+  <dialog id="eventModal" class="modal">
+    <form method="dialog" class="modal-inner">
+      <div class="modal-head">
+        <h2 id="modalTitle">Event</h2>
+        <button class="btn btn-ghost" value="cancel" aria-label="Close">✕</button>
+      </div>
+
+      <div id="modalBody" class="modal-body"></div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" value="cancel" type="submit">Close</button>
+        <button class="btn" id="modalEditBtn" value="cancel" type="submit">Edit</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="footer">
+    <span class="muted">Event Planner • Luxury theme • HTML/CSS/JS • LocalStorage</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
