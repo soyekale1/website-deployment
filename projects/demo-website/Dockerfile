@@ -1,6 +1,6 @@
 # Production-grade static site container
 # - nginx serving on 8080 (container-friendly)
-# - hardened headers via nginx.conf
+# - hardened headers via nginx.confsss
 # - small footprint (alpine)
 
 FROM nginx:alpine

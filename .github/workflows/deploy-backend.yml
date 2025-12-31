@@ -24,7 +24,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::33xnsxoosss:role/ola-github-actions 
+          role-to-assume: arn:aws:iam::122610502034:role/stephen-github-actions 
           role-session-name: WebAssistantBuildSession
       - name: Login to Amazon ECR
         id: login-ecr

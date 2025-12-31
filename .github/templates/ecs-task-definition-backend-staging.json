@@ -23,7 +23,7 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-create-group": "true",
-                    "awslogs-group": "/ecs/event-planner",
+                    "awslogs-group": "/ecs/demo-website",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
                 },
@@ -33,8 +33,8 @@
         }
     ],
     "networkMode": "awsvpc",
-    "taskRoleArn": "arn:aws:iam::3397xiisyiis:role/ecsTaskExecutionRole",
-    "executionRoleArn": "arn:aws:iam::3397sggsfhhs:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::122610502034:role/stephen-task-execution",
+    "executionRoleArn": "arn:aws:iam::122610502034:role/stephen-task-execution",
     "requiresCompatibilities": [
         "FARGATE"
     ],
